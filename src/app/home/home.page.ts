@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
-
+import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { AngularFireAuth } from '@angular/fire/auth';
 @Component({
   selector: 'app-home',
   templateUrl: 'home.page.html',
@@ -7,6 +8,18 @@ import { Component } from '@angular/core';
 })
 export class HomePage {
 
-  constructor() {}
+  constructor(public ngFireAuth: AngularFireAuth, private router: Router,) { }
+  async ngOnInit() {
+    var user = await this.ngFireAuth.currentUser;
+    if (user == null) {
+      this.router.navigate(['/login']);
+    }
+
+
+
+
+
+  }
+
 
 }
