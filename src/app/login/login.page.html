@@ -1,23 +1,40 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>Login Page</ion-title>
+    <ion-title>MemoGram</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
   <ion-card>
-    <img src="./../../assets/apple.jpeg" alt="">
+    <div class="center-cropped">
+    </div>
+
     <ion-card-header>
-      <ion-card-subtitle>Card Subtitle</ion-card-subtitle>
-      <ion-card-title>Card Title</ion-card-title>
+
+      <ion-card-title>Capture Your Memories</ion-card-title>
+      <ion-card-subtitle>MemoGram is a service where you can create and originise your memories! Simply upload an image
+        and write a
+        caption, then see a timeline of all of your memories.</ion-card-subtitle>
+    </ion-card-header>
+    <ion-card-content>
+
+    </ion-card-content>
+
+
+  </ion-card>
+  <ion-card>
+
+    <ion-card-header>
+
+      <ion-card-title>Login/Register here:</ion-card-title>
     </ion-card-header>
 
     <ion-card-content>
       <ion-item>
-        <ion-input [(ngModel)]="user.email" type="email" placeholder="email address"></ion-input>
+        <ion-input [(ngModel)]="user.email" type="email" placeholder="Email Address..."></ion-input>
       </ion-item>
       <ion-item>
-        <ion-input [(ngModel)]="user.password" type="password" placeholder="password"></ion-input>
+        <ion-input [(ngModel)]="user.password" type="password" placeholder="Password..."></ion-input>
       </ion-item>
       <ion-button (click)="login()" expand="block" fill="clear" shape="round">
         Login

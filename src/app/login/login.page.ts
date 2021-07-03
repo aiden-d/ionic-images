@@ -34,7 +34,7 @@ export class LoginPage implements OnInit {
   async register() {
     try {
       const user = await this.ngFireAuth.createUserWithEmailAndPassword(this.user.email, this.user.password);
-
+      await this.ngFirestore.firestore.collection(user.user.email).add({});
     }
     catch (e) {
       alert(e);
