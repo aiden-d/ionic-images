@@ -50,13 +50,17 @@ export class HomePage {
 
   }
   async compressImage(fileUrl, fileName) {
-    var targetSize: number = 15000;
-    var scale: number = 100 - Math.round(((this.imageCompress.byteCount(fileUrl) - targetSize) / this.imageCompress.byteCount(fileUrl)) * 100)
-    console.log("scale = " + scale);
-    var imgCompResult = await this.imageCompress.compressFile(fileUrl, -1, scale, scale);
+    var targetSize: number = 150000;
 
+    var imgCompResult = await this.imageCompress.compressFile(fileUrl, -1, 80, 80);
     var sizeOFCompressedImage = this.imageCompress.byteCount(imgCompResult);
+    if (sizeOFCompressedImage > targetSize) {
+      this.compressImage(imgCompResult, fileName);
+      console.log("recur");
+      return;
+    }
     console.log("comp = " + sizeOFCompressedImage);
+
 
     var dataUri = imgCompResult.split(',')[1];
 
@@ -73,6 +77,7 @@ export class HomePage {
   }
   async createNewMemory(reducedFile?) {
     const maxFileSize = 15000;
+    console.log(this.selectedImage.size);
 
     if (this.showProgress == true) {
       alert("Please wait until previous task is complete!")
@@ -83,8 +88,6 @@ export class HomePage {
       reader.onload = (event: any) => {
         var fileUrl = event.target.result;
         var fileName = this.selectedImage['name'];
-        console.log("name = " + fileName);
-        var sizeOfOriginalImage = this.imageCompress.byteCount(fileUrl);
         this.compressImage(fileUrl, fileName);
 
       }
