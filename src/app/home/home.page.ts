@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { AngularFireStorage } from '@angular/fire/storage';
 import { AngularFirestore } from '@angular/fire/firestore';
+import { Memory } from '../models/memory';
 @Component({
   selector: 'app-home',
   templateUrl: 'home.page.html',
@@ -15,6 +16,8 @@ export class HomePage {
   showProgress: boolean = false;
   imageUrl: string = "*";
 
+  memories: Memory[];
+
 
   constructor(public ngFireAuth: AngularFireAuth, private router: Router, private ngStorage: AngularFireStorage, private ngFirestore: AngularFirestore, route: ActivatedRoute) {
     route.params.subscribe(val => {
@@ -22,18 +25,24 @@ export class HomePage {
     });
   }
   async init() {
+    this.memories = [];
     var user = await this.ngFireAuth.currentUser;
     if (user == null) {
       this.router.navigate(['/login']);
     }
     this.userEmail = user.email;
-    var url = await this.ngStorage.storage.ref("aidendawes@gmail.com/1625307377326.jpeg").getDownloadURL();
-    console.log("url = " + url);
-    this.imageUrl = url;
+
 
     await this.ngFirestore.firestore.collection(this.userEmail).orderBy("date").get().then((snapshot) => {
-      snapshot.docs.forEach(doc => {
-        console.log(doc.data());
+      snapshot.docs.forEach(async doc => {
+        var data = doc.data();
+        var url = await this.ngStorage.storage.ref(data["imagePath"]).getDownloadURL();
+        if (this.memories == null) {
+          this.memories = [{ imageUrl: url, memText: data["memText"] }]
+        }
+        else {
+          this.memories.push({ imageUrl: url, memText: data["memText"] });
+        }
       })
     })
 
@@ -63,6 +72,7 @@ export class HomePage {
       const task = await this.ngStorage.upload(filePath, _selectedImage);
       await this.ngFirestore.firestore.collection(this.userEmail).add({ "imagePath": filePath, "memText": _memText, "date": date });
       alert("Successfully Uploaded");
+      this.init();
 
     }
     catch (e) {

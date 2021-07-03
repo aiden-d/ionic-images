@@ -36,7 +36,10 @@
       </form>
     </ion-card-content>
   </ion-card>
-  <ion-card>
-    <img src={{imageUrl}} alt="">
+  <ion-card *ngFor="let memory of memories; let i = index">
+    <img src={{memory.imageUrl}} alt="">
+    <ion-card-content>
+      {{memory.memText}}
+    </ion-card-content>
   </ion-card>
 </ion-content>
