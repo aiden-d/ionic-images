@@ -4,6 +4,7 @@ import { AngularFireAuth } from '@angular/fire/auth';
 import { AngularFireStorage } from '@angular/fire/storage';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { Memory } from '../models/memory';
+import { NgxImageCompressService } from 'ngx-image-compress';
 @Component({
   selector: 'app-home',
   templateUrl: 'home.page.html',
@@ -19,7 +20,7 @@ export class HomePage {
   memories: Memory[];
 
 
-  constructor(public ngFireAuth: AngularFireAuth, private router: Router, private ngStorage: AngularFireStorage, private ngFirestore: AngularFirestore, route: ActivatedRoute) {
+  constructor(public ngFireAuth: AngularFireAuth, private router: Router, private ngStorage: AngularFireStorage, private ngFirestore: AngularFirestore, route: ActivatedRoute, private imageCompress: NgxImageCompressService) {
     route.params.subscribe(val => {
       this.init();
     });
