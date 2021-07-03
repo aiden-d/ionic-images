@@ -4,13 +4,14 @@ import { AngularFireAuth } from '@angular/fire/auth';
 import { AngularFireStorage } from '@angular/fire/storage';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { Memory } from '../models/memory';
-import { NgxImageCompressService } from 'ngx-image-compress';
+import { DOC_ORIENTATION, NgxImageCompressService } from 'ngx-image-compress';
 @Component({
   selector: 'app-home',
   templateUrl: 'home.page.html',
   styleUrls: ['home.page.scss'],
 })
 export class HomePage {
+
   selectedImage: File = null;
   memText: string = "";
   userEmail: string = "";
@@ -48,12 +49,63 @@ export class HomePage {
     })
 
   }
-  async createNewMemory() {
+  async compressImage(fileUrl, fileName) {
+    var targetSize: number = 15000;
+    var scale: number = 100 - Math.round(((this.imageCompress.byteCount(fileUrl) - targetSize) / this.imageCompress.byteCount(fileUrl)) * 100)
+    console.log("scale = " + scale);
+    var imgCompResult = await this.imageCompress.compressFile(fileUrl, -1, scale, scale);
+
+    var sizeOFCompressedImage = this.imageCompress.byteCount(imgCompResult);
+    console.log("comp = " + sizeOFCompressedImage);
+
+    var dataUri = imgCompResult.split(',')[1];
+
+    const byteString = window.atob(dataUri);
+    const arrayBuffer = new ArrayBuffer(byteString.length);
+    const int8Array = new Uint8Array(arrayBuffer);
+    for (let i = 0; i < byteString.length; i++) {
+      int8Array[i] = byteString.charCodeAt(i);
+    }
+    const blob = new Blob([int8Array], { type: 'image/jpeg' });
+    var newFile = new File([blob], fileName, { type: 'image/jpeg' });
+    this.createNewMemory(newFile);
+
+  }
+  async createNewMemory(reducedFile?) {
+    const maxFileSize = 15000;
+
     if (this.showProgress == true) {
       alert("Please wait until previous task is complete!")
       return;
     }
-    var _selectedImage: File = this.selectedImage;
+    if (!reducedFile && this.selectedImage.size > maxFileSize) {
+      var reader = new FileReader();
+      reader.onload = (event: any) => {
+        var fileUrl = event.target.result;
+        var fileName = this.selectedImage['name'];
+        console.log("name = " + fileName);
+        var sizeOfOriginalImage = this.imageCompress.byteCount(fileUrl);
+        this.compressImage(fileUrl, fileName);
+
+      }
+      reader.readAsDataURL(this.selectedImage);
+      return;
+    }
+
+
+
+
+    var _selectedImage: File;
+    if (reducedFile) {
+      _selectedImage = reducedFile;
+      console.log("using reduced file!");
+    }
+    else {
+      _selectedImage = this.selectedImage;
+    }
+
+
+
     var _memText: string = this.memText;
     if (_selectedImage == null || _memText == null) {
       alert("One or more fields are empty");
@@ -92,8 +144,10 @@ export class HomePage {
 
   }
   onImageSelected(data) {
-    const file = data.target.files[0];
-    this.selectedImage = file;
+
+    this.selectedImage = data.target.files[0];
+    console.log("img size = " + this.selectedImage.size);
+
 
 
 
