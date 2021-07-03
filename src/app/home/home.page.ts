@@ -38,10 +38,10 @@ export class HomePage {
         var data = doc.data();
         var url = await this.ngStorage.storage.ref(data["imagePath"]).getDownloadURL();
         if (this.memories == null) {
-          this.memories = [{ imageUrl: url, memText: data["memText"] }]
+          this.memories = [{ imageUrl: url, memText: data["memText"], id: doc.id, imagePath: data["imagePath"], date: String(data["date"]) }]
         }
         else {
-          this.memories.push({ imageUrl: url, memText: data["memText"] });
+          this.memories.push({ imageUrl: url, memText: data["memText"], id: doc.id, imagePath: data["imagePath"], date: String(data["date"]) });
         }
       })
     })
@@ -52,18 +52,17 @@ export class HomePage {
       alert("Please wait until previous task is complete!")
       return;
     }
-
-    this.showProgress = true;
-
-
     var _selectedImage: File = this.selectedImage;
     var _memText: string = this.memText;
+    if (_selectedImage == null || _memText == null) {
+      alert("One or more fields are empty");
 
-
-
+      return;
+    }
 
     this.showProgress = true;
     try {
+
       var date = Date.now();
       const ext = _selectedImage.type.substring(6, _selectedImage.type.length);
       const filePath = this.userEmail + "/" + date.toString() + "." + ext;
@@ -73,6 +72,8 @@ export class HomePage {
       await this.ngFirestore.firestore.collection(this.userEmail).add({ "imagePath": filePath, "memText": _memText, "date": date });
       alert("Successfully Uploaded");
       this.init();
+      this.memText = "";
+      this.selectedImage = null;
 
     }
     catch (e) {
@@ -96,6 +97,17 @@ export class HomePage {
 
 
   }
+  async deleteMemory(mem: Memory) {
+    if (!confirm("Are you sure you want to delete this memory?")) {
+      return;
+    }
+    await this.ngFirestore.collection(this.userEmail).doc(mem["id"]).delete();
+    await this.ngStorage.ref(mem["imagePath"]).delete();
+    alert("Memory successfully deleted");
+    this.init();
+
+  }
+
 
 
 }

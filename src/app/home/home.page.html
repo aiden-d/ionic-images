@@ -1,7 +1,7 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-title>
-      Home Page
+      MemoGram <ion-icon name="camera"></ion-icon>
     </ion-title>
   </ion-toolbar>
 </ion-header>
@@ -37,9 +37,16 @@
     </ion-card-content>
   </ion-card>
   <ion-card *ngFor="let memory of memories; let i = index">
+    <ion-card-header>
+
+      <ion-card-title>Awesome Title</ion-card-title>
+    </ion-card-header>
     <img src={{memory.imageUrl}} alt="">
     <ion-card-content>
       {{memory.memText}}
     </ion-card-content>
+    <ion-button (click)="deleteMemory(memory)" expand="block" fill="clear" shape="round" block color="danger">
+      Delete
+    </ion-button>
   </ion-card>
 </ion-content>
